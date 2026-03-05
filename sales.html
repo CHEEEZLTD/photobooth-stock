@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Record Sale — Photobooth Stock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+[data-theme="dark"] {
+  --bg: #0c0c0c; --surface: #161616; --surface2: #1f1f1f;
+  --border: #2c2c2c; --text: #f2f2f2; --muted: #6b6b6b;
+}
+[data-theme="light"] {
+  --bg: #f4f4f4; --surface: #ffffff; --surface2: #eeeeee;
+  --border: #e0e0e0; --text: #111111; --muted: #888888;
+}
+.theme-toggle { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); transition: all 0.15s; font-family: var(--font-body); }
+.theme-toggle:hover { border-color: #ED2424; color: var(--text); }
+
+:root {
+  --red: #ED2424;
+  --red-dark: #c01c1c;
+  --bg: #0c0c0c;
+  --surface: #161616;
+  --surface2: #1f1f1f;
+  --border: #2c2c2c;
+  --text: #f2f2f2;
+  --muted: #6b6b6b;
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --font-head: 'Barlow Condensed', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 14px; min-height: 100vh; }
+
+nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; height: 58px; position: sticky; top: 0; z-index: 99;
+}
+.nav-logo { font-family: var(--font-head); font-size: 22px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--red); }
+.nav-logo span { color: var(--text); }
+.nav-links { display: flex; gap: 4px; }
+.nav-link { font-family: var(--font-head); font-size: 15px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; }
+.nav-link:hover, .nav-link.active { color: var(--text); background: var(--surface2); }
+.nav-link.active { color: var(--red); }
+.conn-badge { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); padding: 4px 10px; background: var(--surface2); border-radius: 20px; }
+.conn-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+.conn-dot.live { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+.container { max-width: 900px; margin: 0 auto; padding: 40px 28px; }
+
+.page-title { font-family: var(--font-head); font-size: 42px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; line-height: 1; margin-bottom: 6px; }
+.page-title span { color: var(--red); }
+.page-sub { color: var(--muted); font-size: 13px; margin-bottom: 36px; }
+
+/* ── SALE FORM ── */
+.sale-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.form-section {
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--border);
+}
+.form-section:last-child { border-bottom: none; }
+
+.form-section-title {
+  font-family: var(--font-head);
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+/* Location picker */
+.loc-picker { display: flex; gap: 10px; flex-wrap: wrap; }
+.loc-btn {
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  color: var(--muted);
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 12px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+.loc-btn:hover { border-color: var(--red); color: var(--text); }
+.loc-btn.selected { background: var(--red); border-color: var(--red); color: #fff; }
+.loc-btn .loc-sub { display: block; font-family: var(--font-body); font-size: 10px; font-weight: 400; letter-spacing: 0; margin-top: 2px; opacity: 0.8; }
+
+/* Product picker */
+.product-picker { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.prod-btn {
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  color: var(--muted);
+  padding: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.prod-btn:hover { border-color: var(--red); color: var(--text); }
+.prod-btn.selected { background: rgba(237,36,36,0.1); border-color: var(--red); color: var(--text); }
+.prod-icon { font-size: 28px; margin-bottom: 6px; }
+.prod-name { font-family: var(--font-head); font-size: 16px; font-weight: 700; letter-spacing: 1px; }
+.prod-stock { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.prod-stock.low { color: var(--amber); }
+.prod-stock.out { color: var(--red); }
+
+/* Qty and amount */
+.qty-row { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; }
+.form-group { flex: 1; min-width: 140px; }
+.form-label { display: block; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.form-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-family: var(--font-head);
+  font-size: 24px;
+  font-weight: 700;
+  outline: none;
+  transition: border 0.15s;
+}
+.form-input:focus { border-color: var(--red); }
+.form-input::placeholder { color: var(--muted); font-size: 18px; }
+
+/* Stock preview */
+.stock-preview {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: none;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.stock-preview.show { display: flex; }
+.preview-item { text-align: center; }
+.preview-loc { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.preview-qty {
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 700;
+}
+.preview-qty.low { color: var(--amber); }
+.preview-qty.out { color: var(--red); }
+
+/* Submit */
+.submit-btn {
+  width: 100%;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  padding: 16px;
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  border-radius: 0;
+}
+.submit-btn:hover:not(:disabled) { background: var(--red-dark); }
+.submit-btn:active { transform: scale(0.99); }
+.submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--green);
+  color: #000;
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 999;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.error { background: var(--red); color: #fff; }
+
+/* Sales log */
+.section-title { font-family: var(--font-head); font-size: 20px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.sales-table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+table { width: 100%; border-collapse: collapse; }
+thead th { background: var(--surface2); padding: 12px 16px; text-align: left; font-family: var(--font-head); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--surface2); }
+td { padding: 12px 16px; vertical-align: middle; font-size: 13px; }
+.td-loc { font-family: var(--font-head); font-size: 16px; font-weight: 700; color: var(--red); }
+.td-qty { font-family: var(--font-head); font-size: 20px; font-weight: 700; }
+.td-amt { font-family: var(--font-head); font-size: 16px; color: var(--green); }
+.td-time { font-size: 11px; color: var(--muted); }
+.no-data { text-align: center; padding: 40px; color: var(--muted); }
+.spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--red); border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: var(--bg); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><img src="logo.png" alt="Logo" style="height:34px;width:auto;display:block;"></div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Dashboard</a>
+    <a href="sales.html" class="nav-link active">Record Sale</a>
+    <a href="inventory.html" class="nav-link">Manage Stock</a>
+  </div>
+  <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">☀️</span> <span id="theme-label">Day</span></button>
+  <div class="conn-badge">
+    <div class="conn-dot" id="conn-dot"></div>
+    <span id="conn-label">Connecting…</span>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="page-title">Record <span>Sale</span></div>
+  <div class="page-sub">Select location, product and quantity. Stock updates in real time.</div>
+
+  <div class="sale-form">
+    <!-- Location -->
+    <div class="form-section">
+      <div class="form-section-title">1. Select Location</div>
+      <div class="loc-picker" id="loc-picker">
+        <button class="loc-btn" data-loc="LSQ">LSQ<span class="loc-sub">Leicester Square</span></button>
+        <button class="loc-btn" data-loc="TCR">TCR<span class="loc-sub">Tottenham Court Rd</span></button>
+        <button class="loc-btn" data-loc="CAM">CAM<span class="loc-sub">Camden</span></button>
+      </div>
+    </div>
+
+    <!-- Product -->
+    <div class="form-section">
+      <div class="form-section-title">2. Select Product</div>
+      <div class="product-picker" id="product-picker">
+        <button class="prod-btn" data-prod="film_camera"><div class="prod-icon">📷</div><div class="prod-name">Film Camera</div><div class="prod-stock" id="stk-film_camera">—</div></button>
+        <button class="prod-btn" data-prod="digital_camera"><div class="prod-icon">📸</div><div class="prod-name">Digital Camera</div><div class="prod-stock" id="stk-digital_camera">—</div></button>
+        <button class="prod-btn" data-prod="sticker_01"><div class="prod-icon">🏷️</div><div class="prod-name">Sticker 01</div><div class="prod-stock" id="stk-sticker_01">—</div></button>
+        <button class="prod-btn" data-prod="sticker_02"><div class="prod-icon">🏷️</div><div class="prod-name">Sticker 02</div><div class="prod-stock" id="stk-sticker_02">—</div></button>
+      </div>
+    </div>
+
+    <!-- Qty + Amount -->
+    <div class="form-section">
+      <div class="form-section-title">3. Quantity & Amount</div>
+      <div class="qty-row">
+        <div class="form-group">
+          <label class="form-label">Quantity Sold</label>
+          <input class="form-input" type="number" id="qty-input" min="1" value="1" placeholder="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sale Amount (£)</label>
+          <input class="form-input" type="number" id="amount-input" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Staff (optional)</label>
+          <input class="form-input" id="staff-input" style="font-size:16px;font-family:var(--font-body);" placeholder="Name">
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <button class="submit-btn" id="submit-btn" disabled onclick="submitSale()">
+      CONFIRM SALE
+    </button>
+  </div>
+
+  <!-- Today's Sales -->
+  <div class="section-title">Today's Sales</div>
+  <div class="sales-table-wrap">
+    <table>
+      <thead><tr><th>Time</th><th>Location</th><th>Product</th><th>Qty</th><th>Amount</th><th>Staff</th></tr></thead>
+      <tbody id="sales-tbody">
+        <tr><td colspan="6"><div class="no-data"><div class="spinner"></div></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, runTransaction, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA_s0bIU7WYS7JPSsSuGgXx9xhlyYFoFko",
+  authDomain: "cheeezstock.firebaseapp.com",
+  databaseURL: "https://cheeezstock-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "cheeezstock",
+  storageBucket: "cheeezstock.firebasestorage.app",
+  messagingSenderId: "218543080764",
+  appId: "1:218543080764:web:70ed03de545754d7cc4a39"
+};
+
+const PRODUCTS = [
+  { id: 'film_camera',    label: 'Film Camera',    icon: '📷' },
+  { id: 'digital_camera', label: 'Digital Camera', icon: '📸' },
+  { id: 'sticker_01',     label: 'Sticker 01',     icon: '🏷️' },
+  { id: 'sticker_02',     label: 'Sticker 02',     icon: '🏷️' },
+];
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let currentStock = {};
+let selectedLoc = null;
+let selectedProd = null;
+
+// Pre-select location from URL param
+const urlLoc = new URLSearchParams(location.search).get('loc');
+if (urlLoc) {
+  setTimeout(() => {
+    const btn = document.querySelector(`.loc-btn[data-loc="${urlLoc}"]`);
+    if (btn) btn.click();
+  }, 300);
+}
+
+// Connection
+onValue(ref(db, '.info/connected'), snap => {
+  const live = snap.val() === true;
+  document.getElementById('conn-dot').className = 'conn-dot' + (live ? ' live' : '');
+  document.getElementById('conn-label').textContent = live ? 'Live' : 'Offline';
+});
+
+// Stock listener
+onValue(ref(db, 'stock'), snap => {
+  currentStock = snap.val() || {};
+  updateProductStockDisplay();
+});
+
+// Sales listener (today)
+onValue(ref(db, 'sales'), snap => {
+  const all = snap.val() ? Object.values(snap.val()) : [];
+  const today = new Date().toDateString();
+  const todaySales = all
+    .filter(s => new Date(s.timestamp).toDateString() === today)
+    .sort((a,b) => b.timestamp - a.timestamp);
+  renderSalesTable(todaySales);
+});
+
+// Location picker
+document.getElementById('loc-picker').addEventListener('click', e => {
+  const btn = e.target.closest('.loc-btn');
+  if (!btn) return;
+  document.querySelectorAll('.loc-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedLoc = btn.dataset.loc;
+  updateProductStockDisplay();
+  checkSubmit();
+});
+
+// Product picker
+document.getElementById('product-picker').addEventListener('click', e => {
+  const btn = e.target.closest('.prod-btn');
+  if (!btn) return;
+  document.querySelectorAll('.prod-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedProd = btn.dataset.prod;
+  checkSubmit();
+});
+
+function updateProductStockDisplay() {
+  PRODUCTS.forEach(p => {
+    const el = document.getElementById('stk-' + p.id);
+    if (!el) return;
+    if (!selectedLoc) { el.textContent = '—'; el.className = 'prod-stock'; return; }
+    const qty = (currentStock[selectedLoc] || {})[p.id] || 0;
+    el.textContent = qty === 0 ? 'OUT OF STOCK' : `${qty} in stock`;
+    el.className = 'prod-stock' + (qty === 0 ? ' out' : qty <= 3 ? ' low' : '');
+  });
+}
+
+function checkSubmit() {
+  document.getElementById('submit-btn').disabled = !(selectedLoc && selectedProd);
+}
+
+window.submitSale = async function() {
+  const qty = parseInt(document.getElementById('qty-input').value) || 1;
+  const amount = parseFloat(document.getElementById('amount-input').value) || 0;
+  const staff = document.getElementById('staff-input').value.trim();
+
+  if (!selectedLoc || !selectedProd) return;
+
+  const currentQty = (currentStock[selectedLoc] || {})[selectedProd] || 0;
+  if (currentQty < qty) {
+    showToast(`Not enough stock! Only ${currentQty} available.`, true);
+    return;
+  }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'SAVING…';
+
+  try {
+    // Atomic stock deduction
+    await runTransaction(ref(db, `stock/${selectedLoc}/${selectedProd}`), current => {
+      if (current === null) current = 0;
+      if (current < qty) return; // abort
+      return current - qty;
+    });
+
+    // Log sale
+    await push(ref(db, 'sales'), {
+      location: selectedLoc,
+      product: selectedProd,
+      qty,
+      amount,
+      staff: staff || null,
+      timestamp: Date.now(),
+    });
+
+    showToast(`✓ Sale recorded! ${qty}x ${selectedProd.replace('_',' ')} at ${selectedLoc}`);
+    document.getElementById('qty-input').value = 1;
+    document.getElementById('amount-input').value = '';
+  } catch (err) {
+    showToast('Error saving sale. Try again.', true);
+    console.error(err);
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'CONFIRM SALE';
+};
+
+function renderSalesTable(sales) {
+  const tbody = document.getElementById('sales-tbody');
+  if (!sales.length) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="no-data">No sales today yet.</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = sales.map(s => {
+    const prod = PRODUCTS.find(p => p.id === s.product) || {};
+    const time = new Date(s.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    return `<tr>
+      <td class="td-time">${time}</td>
+      <td class="td-loc">${s.location}</td>
+      <td>${prod.icon || ''} ${prod.label || s.product}</td>
+      <td class="td-qty">${s.qty}</td>
+      <td class="td-amt">${s.amount ? '£' + Number(s.amount).toFixed(2) : '—'}</td>
+      <td style="color:var(--muted)">${s.staff || '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function showToast(msg, error = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (error ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+window.toggleTheme = function() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  document.getElementById('theme-icon').textContent = next === 'light' ? '🌙' : '☀️';
+  document.getElementById('theme-label').textContent = next === 'light' ? 'Night' : 'Day';
+  localStorage.setItem('pb-theme', next);
+};
+const _saved = localStorage.getItem('pb-theme');
+if (_saved) {
+  document.documentElement.setAttribute('data-theme', _saved);
+  const ti = document.getElementById('theme-icon');
+  const tl = document.getElementById('theme-label');
+  if (ti) ti.textContent = _saved === 'light' ? '🌙' : '☀️';
+  if (tl) tl.textContent = _saved === 'light' ? 'Night' : 'Day';
+}
+
+</script>
+</body>
+</html>
